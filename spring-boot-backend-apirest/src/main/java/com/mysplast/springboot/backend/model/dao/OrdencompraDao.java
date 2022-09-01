@@ -16,9 +16,10 @@ public interface OrdencompraDao extends CrudRepository<Ordencompra, String> {
 	@Query(value="EXEC usp_consultagastos @fecha1 = :fecha1, @fecha2 = :fecha2, @moneda = :moneda", nativeQuery = true)
 	public List<Ordencompra> filtroGastos(@Param("fecha1")String fecha1,@Param("fecha2")String fecha2,@Param("moneda")String moneda);
 	
-	@Query("SELECT d FROM Ordencompra d WHERE d.NRO_ORDENCOMPRA = ?1")
+	@Query("SELECT d FROM Ordencompra d WHERE d.NROORDENCOMPRA = ?1")
 	public Ordencompra buscarPorNroOrden(String nroorden);
 
-	public List<Ordencompra> findTop50ByOrderByFECHADesc();
+	@Query(value="SELECT TOP(50)* FROM ORDENCOMPRA ORDER BY NROORDENCOMPRA DESC", nativeQuery = true)
+	public List<Ordencompra> listar50OrdenesDeCompra();
 
 }

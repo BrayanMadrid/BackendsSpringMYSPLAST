@@ -52,8 +52,8 @@ public class Ordencompra implements Serializable {
 	@DateTimeFormat(pattern = "yyyy-MM-dd")
 	private String FECHA;
 	
-	@Column(name="NRO_ORDENCOMPRA", length = 20, nullable = true)
-	private String NRO_ORDENCOMPRA;
+	@Column(name="NROORDENCOMPRA", length = 20, nullable = true)
+	private String NROORDENCOMPRA;
 	
 	@Column(name="MONEDA", length = 20, nullable = false)
 	private String MONEDA;
@@ -131,12 +131,12 @@ public class Ordencompra implements Serializable {
 		FECHA = fECHA;
 	}
 
-	public String getNRO_ORDENCOMPRA() {
-		return NRO_ORDENCOMPRA;
+	public String getNROORDENCOMPRA() {
+		return NROORDENCOMPRA;
 	}
 
-	public void setNRO_ORDENCOMPRA(String nRO_ORDENCOMPRA) {
-		NRO_ORDENCOMPRA = nRO_ORDENCOMPRA;
+	public void setNROORDENCOMPRA(String nROORDENCOMPRA) {
+		NROORDENCOMPRA = nROORDENCOMPRA;
 	}
 
 	public String getMONEDA() {

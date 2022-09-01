@@ -199,5 +199,35 @@ public class NaturalController {
 		
 		return new ResponseEntity<List<Natural>>(filtronatural, HttpStatus.OK);
 	}
+	
+	@Secured({ "ROLE_ALMACEN", "ROLE_ADMIN" , "ROLE_JEFE", "ROLE_LOGISTICA"})
+	@GetMapping("/filtroC")
+	public ResponseEntity<?> filtroNaturalColaborador(
+			@RequestParam(value = "nombre", required = false) String nombre,
+			@RequestParam(value = "nrodoc", required = false) String nrodoc) {
+		
+		List<Natural> filtronatural = null;
+
+		Map<String, Object> response = new HashMap<>();
+		
+		if(nombre.equals("")) {
+			nombre = null;
+		}
+		if(nrodoc.equals("")) {
+			nrodoc = null;
+		}
+	
+		try {
+			filtronatural = naturalservice.filtroNaturalColaborador(nombre, nrodoc);
+		} catch (DataAccessException e) {
+			response.put("mensaje", "Error al realizar la consulta en la base de datos!");
+			response.put("error", e.getMessage().concat(":").concat(e.getMostSpecificCause().getMessage()));
+			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+
+		
+		
+		return new ResponseEntity<List<Natural>>(filtronatural, HttpStatus.OK);
+	}
 
 }

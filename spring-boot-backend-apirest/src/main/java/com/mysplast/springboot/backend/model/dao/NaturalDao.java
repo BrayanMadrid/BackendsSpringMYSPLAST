@@ -14,5 +14,6 @@ public interface NaturalDao extends CrudRepository<Natural, String> {
 	@Query(value="EXEC usp_consultanatural @nombre = :nombre, @nrodoc = :nrodoc", nativeQuery = true)
 	public List<Natural>filtrarNatural(@Param("nombre") String nombre, @Param("nrodoc") String nrodoc);
 
-
+	@Query(value="EXEC usp_consultanaturalcolaborador @nombre = :nombre, @nrodoc = :nrodoc", nativeQuery = true)
+	public List<Natural>filtrarNaturalColaborador(@Param("nombre") String nombre, @Param("nrodoc") String nrodoc);
 }

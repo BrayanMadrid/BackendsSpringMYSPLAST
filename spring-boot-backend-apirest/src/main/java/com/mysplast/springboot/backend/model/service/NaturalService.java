@@ -36,4 +36,8 @@ public class NaturalService {
 		return (List<Natural>) naturalrepo.filtrarNatural(nombre, nrodoc);
 	}
 
+	public List<Natural> filtroNaturalColaborador(String nombre, String nrodoc){
+		return (List<Natural>) naturalrepo.filtrarNaturalColaborador(nombre, nrodoc);
+	}
+	
 }

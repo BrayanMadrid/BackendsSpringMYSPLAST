@@ -21,7 +21,7 @@ public class OrdencompraService {
 	}
 	
 	public List<Ordencompra> listarTop50Ordencompras(){
-		return (List<Ordencompra>) ordencomprarepo.findTop50ByOrderByFECHADesc();
+		return (List<Ordencompra>) ordencomprarepo.listar50OrdenesDeCompra();
 	}
 	
 	public Ordencompra buscarOrdencomprasId(String id){
