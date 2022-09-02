@@ -85,14 +85,9 @@ public class ReporteController {
 		Map<String, Object> response = new HashMap<>();
 		
 
-		if (sector.equals("") && almacen.equals("") && producto.equals("") && fecha1.equals("")
-				&& fecha2.equals("")) {
-			response.put("mensaje", "Tiene que ingresar al menos un dato!");
-			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.NOT_FOUND);
-		}
-		
-		if (fecha1!="" && fecha2.equals("") || fecha1.equals("") && fecha2!="") {
-			response.put("mensaje", "Si va a filtrar por fechas debe escoger un rango de fechas!");
+		if (sector.equals("") || almacen.equals("") || producto.equals("") || fecha1.equals("")
+				|| fecha2.equals("")) {
+			response.put("mensaje", "Todos los campos del filtro son obligatorios!");
 			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.NOT_FOUND);
 		}
 

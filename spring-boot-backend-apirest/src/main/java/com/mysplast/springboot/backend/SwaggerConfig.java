@@ -17,7 +17,7 @@ public class SwaggerConfig {
 	public Docket apiDocket() {
 		return new Docket(DocumentationType.SWAGGER_2)
 				.select()
-				.apis(RequestHandlerSelectors.basePackage("com.grupoisamisa.springboot"))
+				.apis(RequestHandlerSelectors.basePackage("com.mysplast.springboot"))
 				.paths(PathSelectors.any())
 				.build()
 				;
