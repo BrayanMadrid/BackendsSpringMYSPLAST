@@ -81,6 +81,32 @@ public class ProductoController {
 	}
 	
 	@Secured({ "ROLE_ALMACEN", "ROLE_ADMIN" , "ROLE_JEFE", "ROLE_LOGISTICA"})
+	@GetMapping("/buscar/sector/{sector}")
+	public ResponseEntity<?> listarProductosInventarioFisico(@PathVariable String sector){
+		
+		List<Producto> productos = null;
+		
+		Map<String, Object> response = new HashMap<>();
+		
+		try {
+			productos = productoservice.listarProductosInventariofisico(sector);
+		} catch (DataAccessException e) {
+			// TODO: handle exception
+			response.put("mensaje", "Error al realizar la consulta en la base de datos!");
+			response.put("error",e.getMessage().concat(":").concat(e.getMostSpecificCause().getMessage()));
+			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		
+		if(productos == null) {
+			response.put("mensaje", "No existen productos en el sector indicado!");
+			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.NOT_FOUND);
+		}
+		
+		return new ResponseEntity<List<Producto>>(productos, HttpStatus.OK);
+		
+	}
+	
+	@Secured({ "ROLE_ALMACEN", "ROLE_ADMIN" , "ROLE_JEFE", "ROLE_LOGISTICA"})
 	@DeleteMapping("/eliminar/{id}")
 	public ResponseEntity<?> eliminarPorId(@PathVariable String id){
 		

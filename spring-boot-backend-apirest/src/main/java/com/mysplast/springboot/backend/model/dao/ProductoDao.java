@@ -20,6 +20,9 @@ public interface ProductoDao extends CrudRepository<Producto, String> {
 	@Query(value = "SELECT * FROM PRODUCTO WHERE nom_PRODUCTO like CONCAT('%',:term,'%') AND FLAG_INSUMO = 'Y'", nativeQuery=true)
 	public List<Producto> buscarProductosDeInsumos(String term);
 	
+	@Query(value="EXEC usp_productosinventariofisico @sector= :sector", nativeQuery=true)
+	public List<Producto> buscarProductosInventariofisico(@Param("sector") String sector);
+	
 	public List<Producto> findByNOMBREContainingIgnoreCase(String term);
 
 }

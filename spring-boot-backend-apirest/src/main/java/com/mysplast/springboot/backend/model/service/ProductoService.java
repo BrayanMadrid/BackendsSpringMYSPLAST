@@ -36,6 +36,10 @@ public class ProductoService {
 		return (List<Producto>) productorepo.filtrarProductos(categoria, nombre, marca);
 	}
 	
+	public List<Producto> listarProductosInventariofisico(String sector){
+		return productorepo.buscarProductosInventariofisico(sector);
+	}
+	
 	public List<Producto> findByNombre(String term){
 		return productorepo.findByNOMBREContainingIgnoreCase(term);
 	}
