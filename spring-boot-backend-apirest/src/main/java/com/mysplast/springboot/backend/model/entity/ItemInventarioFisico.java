@@ -31,6 +31,15 @@ public class ItemInventarioFisico implements Serializable {
 	@Column(name="CANTIDAD", nullable=false)
 	private double CANTIDAD;
 	
+	@Column(name="OBSERVACION", length=250, nullable=true)
+	private String OBSERVACION;
+	
+	@Column(name="CANTIDADSISTEMA", nullable=false)
+	private double CANTIDADSISTEMA;
+	
+	@Column(name="DIFERENCIA", nullable=false)
+	private double DIFERENCIA;
+	
 	@ManyToOne(fetch=FetchType.LAZY)
 	@JoinColumn(name="ID_PRODUCTO", referencedColumnName ="ID_PRODUCTO")
 	@JsonIgnoreProperties({"hibernateLazyInitializer","handler"})
@@ -58,6 +67,30 @@ public class ItemInventarioFisico implements Serializable {
 
 	public void setId_PRODUCTO(Producto id_PRODUCTO) {
 		this.id_PRODUCTO = id_PRODUCTO;
+	}
+
+	public String getOBSERVACION() {
+		return OBSERVACION;
+	}
+
+	public void setOBSERVACION(String oBSERVACION) {
+		OBSERVACION = oBSERVACION;
+	}
+
+	public double getCANTIDADSISTEMA() {
+		return CANTIDADSISTEMA;
+	}
+
+	public void setCANTIDADSISTEMA(double cANTIDADSISTEMA) {
+		CANTIDADSISTEMA = cANTIDADSISTEMA;
+	}
+
+	public double getDIFERENCIA() {
+		return DIFERENCIA;
+	}
+
+	public void setDIFERENCIA(double dIFERENCIA) {
+		DIFERENCIA = dIFERENCIA;
 	}
 
 }

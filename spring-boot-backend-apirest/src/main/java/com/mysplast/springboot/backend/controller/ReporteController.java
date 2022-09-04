@@ -71,6 +71,35 @@ public class ReporteController {
 
 		return new ResponseEntity<List<Stock>>(filtroproductostock, HttpStatus.OK);
 	}
+	
+	
+	@GetMapping("/stock/sector")
+	public ResponseEntity<?> filtroStockPorSector(@RequestParam(value = "sector", required = false) String sector) {
+		
+		List<Stock> filtroproductostock = null;
+
+		Map<String, Object> response = new HashMap<>();
+		
+		if (sector.equals("")) {
+			response.put("mensaje", "Todos los datos son obligatorios!");
+			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.NOT_FOUND);
+		}
+
+		if (sector.equals("")) {
+			sector = null;
+		}
+
+		try {
+			filtroproductostock = productostockservice.buscarStockPorSector(sector);
+		} catch (DataAccessException e) {
+			response.put("mensaje", "Error al realizar la consulta en la base de datos!");
+			response.put("error", e.getMessage().concat(":").concat(e.getMostSpecificCause().getMessage()));
+			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+
+
+		return new ResponseEntity<List<Stock>>(filtroproductostock, HttpStatus.OK);
+	}
 
 	@GetMapping("/filtrokardex")
 	public ResponseEntity<?> filtroKardex(

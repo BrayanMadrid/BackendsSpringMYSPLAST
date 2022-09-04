@@ -32,7 +32,7 @@ public class InventarioFisicoService {
 		return inventariofisicorepo.findById(id).get();
 	}
 	
-	public InventarioFisico buscarInventarioFisicoxFecha(String fecha) {
+	public InventarioFisico buscarInventarioFisicoxFecha (String fecha) {
 		return inventariofisicorepo.buscarInventarioFisicoxFecha(fecha);
 	}
 	

@@ -16,6 +16,7 @@ public interface StockDao  extends CrudRepository<Stock, Long> {
 	@Query(value="EXEC usp_consultastock @sector = :sector, @almacen = :almacen, @producto = :producto", nativeQuery = true)
 	public List<Stock> filtroStock(@Param("sector") String sector, @Param("almacen") String almacen, @Param("producto")String producto);
 
-
+	@Query(value = "SELECT * FROM Stock WHERE id_SECTOR = :sector", nativeQuery=true)
+	public List<Stock> buscarStockporSector(String sector);
 
 }

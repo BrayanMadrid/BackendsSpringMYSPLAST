@@ -52,12 +52,23 @@ public class InventarioFisico implements Serializable {
 	@DateTimeFormat(pattern="YYYY-MM-dd")
 	private String FECHA;
 	
+	@Column(name="ESTADO", length = 1, nullable = true)
+	private String ESTADO;
+	
 	@Column(name="REG_USER", length=25, nullable=true)
 	private String REG_USER;
 	
 	@Column(name="FECH_REG_USER", nullable=true)
 	@DateTimeFormat(pattern = "YYYY-MM-dd")
 	private String FECH_REG_USER;
+	
+	@Column(name="MOD_USER", length=25, nullable=true)
+	private String MOD_USER;
+	
+	@Column(name="FECH_MOD_USER", nullable=true)
+	@DateTimeFormat(pattern = "YYYY-MM-dd")
+	private String FECH_MOD_USER;
+	
 	
 	@ManyToOne(fetch=FetchType.LAZY)
 	@JoinColumn(name="RESPONSABLE", referencedColumnName ="ID_PERSONA")
@@ -128,6 +139,30 @@ public class InventarioFisico implements Serializable {
 
 	public void setId_SECTOR(Sector id_SECTOR) {
 		this.id_SECTOR = id_SECTOR;
+	}
+
+	public String getESTADO() {
+		return ESTADO;
+	}
+
+	public void setESTADO(String eSTADO) {
+		ESTADO = eSTADO;
+	}
+
+	public String getMOD_USER() {
+		return MOD_USER;
+	}
+
+	public void setMOD_USER(String mOD_USER) {
+		MOD_USER = mOD_USER;
+	}
+
+	public String getFECH_MOD_USER() {
+		return FECH_MOD_USER;
+	}
+
+	public void setFECH_MOD_USER(String fECH_MOD_USER) {
+		FECH_MOD_USER = fECH_MOD_USER;
 	}
 	
 }

@@ -136,6 +136,7 @@ public class InventarioFisicoController {
 		
 		try {
 			if(inventarioObtenidoxFecha == null) {
+				inventariofisico.setESTADO("A");
 				inventariofisico.setREG_USER(authentication.getName());
 				inventariofisico.setFECH_REG_USER(ZonedDateTime.now().toLocalDate().toString());
 				nuevoinventariofisico =	inventariofisicoservice.grabarInventarioFisico(inventariofisico);

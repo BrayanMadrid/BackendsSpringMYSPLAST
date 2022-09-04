@@ -32,5 +32,9 @@ public class StockService {
 	public Stock grabarProductoStock(Stock stock) {
 		return productostockrepo.save(stock);
 	}
+	
+	public List<Stock> buscarStockPorSector(String sector) {
+		return productostockrepo.buscarStockporSector(sector);
+	}
 
 }
