@@ -55,6 +55,9 @@ public class InventarioFisico implements Serializable {
 	@Column(name="ESTADO", length = 1, nullable = true)
 	private String ESTADO;
 	
+	@Column(name="NROINVENTARIO", length=20, nullable=true)
+	private String NROINVENTARIO;
+	
 	@Column(name="REG_USER", length=25, nullable=true)
 	private String REG_USER;
 	
@@ -123,6 +126,14 @@ public class InventarioFisico implements Serializable {
 
 	public void setFECH_REG_USER(String fECH_REG_USER) {
 		FECH_REG_USER = fECH_REG_USER;
+	}
+	
+	public String getNROINVENTARIO() {
+		return NROINVENTARIO;
+	}
+
+	public void setNROINVENTARIO(String nROINVENTARIO) {
+		NROINVENTARIO = nROINVENTARIO;
 	}
 
 	public Natural getResponsable() {

@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -122,6 +123,119 @@ public class InventarioFisicoController {
 		
 	}
 	
+	@Secured({ "ROLE_ADMIN", "ROLE_LOGISTICA" })
+	@PutMapping("/aprobar/{id}")
+	public ResponseEntity<?> aprobarInventarioFisico(@RequestBody InventarioFisico inventarioFisico,
+			@PathVariable String id) {
+		InventarioFisico inventariofisicoActual = inventariofisicoservice.buscarInventarioFisicoxID(id);
+		InventarioFisico inventarioFisicoActualizado = null;
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		Map<String, Object> response = new HashMap<>();
+
+		if (inventariofisicoActual == null) {
+			response.put("mensaje", "El ordencompra con el ID:" + id.toString() + "no existe!");
+			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.NOT_FOUND);
+		}
+
+		if (inventariofisicoActual.getESTADO().equals("A")) {
+			response.put("mensaje", "El Inventario Físico con el ID:" + id.toString()
+					+ "se encuentra aprobado, comuníquese con el encargado de almacén!");
+			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.NOT_FOUND);
+		}
+
+		try {
+			inventariofisicoActual.setESTADO("A");
+			inventariofisicoActual.setMOD_USER(authentication.getName());
+			inventariofisicoActual.setFECH_MOD_USER(ZonedDateTime.now().toLocalDate().toString());
+			inventarioFisicoActualizado = inventariofisicoservice.grabarInventarioFisico(inventariofisicoActual);
+
+		} catch (DataAccessException e) {
+			response.put("mensaje", "Error al actualizar el Inventario Físico!");
+			response.put("error", e.getMessage().concat(":").concat(e.getMostSpecificCause().getMessage()));
+			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+
+		response.put("mensaje", "El Inventario Físico ha sido actualizado con éxito!");
+		response.put("inventariofisico", inventarioFisicoActualizado);
+		return new ResponseEntity<Map<String, Object>>(response, HttpStatus.OK);
+	}
+
+	
+	@Secured({ "ROLE_ADMIN", "ROLE_LOGISTICA" })
+	@PutMapping("/anular/{id}")
+	public ResponseEntity<?> anularInventarioFisico(@RequestBody InventarioFisico inventarioFisico,
+			@PathVariable String id) {
+		InventarioFisico inventariofisicoActual = inventariofisicoservice.buscarInventarioFisicoxID(id);
+		InventarioFisico inventarioFisicoActualizado = null;
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		Map<String, Object> response = new HashMap<>();
+
+		if (inventariofisicoActual == null) {
+			response.put("mensaje", "El ordencompra con el ID:" + id.toString() + "no existe!");
+			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.NOT_FOUND);
+		}
+
+		if (inventariofisicoActual.getESTADO().equals("N")) {
+			response.put("mensaje", "El Inventario Físico con el ID:" + id.toString()
+					+ "se encuentra anulado, comuníquese con el encargado de almacén!");
+			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.NOT_FOUND);
+		}
+
+		try {
+			inventariofisicoActual.setESTADO("N");
+			inventariofisicoActual.setMOD_USER(authentication.getName());
+			inventariofisicoActual.setFECH_MOD_USER(ZonedDateTime.now().toLocalDate().toString());
+			inventarioFisicoActualizado = inventariofisicoservice.grabarInventarioFisico(inventariofisicoActual);
+
+		} catch (DataAccessException e) {
+			response.put("mensaje", "Error al actualizar el Inventario Físico!");
+			response.put("error", e.getMessage().concat(":").concat(e.getMostSpecificCause().getMessage()));
+			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+
+		response.put("mensaje", "El Inventario Físico ha sido actualizado con éxito!");
+		response.put("inventariofisico", inventarioFisicoActualizado);
+		return new ResponseEntity<Map<String, Object>>(response, HttpStatus.OK);
+	}
+	
+	@Secured({ "ROLE_ADMIN", "ROLE_LOGISTICA" })
+	@PutMapping("/regularizar/{id}")
+	public ResponseEntity<?> regularizarInventarioFisico(@RequestBody InventarioFisico inventarioFisico,
+			@PathVariable String id) {
+		InventarioFisico inventariofisicoActual = inventariofisicoservice.buscarInventarioFisicoxID(id);
+		InventarioFisico inventarioFisicoActualizado = null;
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		Map<String, Object> response = new HashMap<>();
+
+		if (inventariofisicoActual == null) {
+			response.put("mensaje", "El ordencompra con el ID:" + id.toString() + "no existe!");
+			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.NOT_FOUND);
+		}
+
+		if (inventariofisicoActual.getESTADO().equals("N")) {
+			response.put("mensaje", "El Inventario Físico con el ID:" + id.toString()
+					+ "se encuentra anulado, comuníquese con el encargado de almacén!");
+			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.NOT_FOUND);
+		}
+
+		try {
+			inventariofisicoActual.setESTADO("R");
+			inventariofisicoActual.setMOD_USER(authentication.getName());
+			inventariofisicoActual.setFECH_MOD_USER(ZonedDateTime.now().toLocalDate().toString());
+			inventarioFisicoActualizado = inventariofisicoservice.grabarInventarioFisico(inventariofisicoActual);
+
+		} catch (DataAccessException e) {
+			response.put("mensaje", "Error al actualizar el Inventario Físico!");
+			response.put("error", e.getMessage().concat(":").concat(e.getMostSpecificCause().getMessage()));
+			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+
+		response.put("mensaje", "El Inventario Físico ha sido actualizado con éxito!");
+		response.put("inventariofisico", inventarioFisicoActualizado);
+		return new ResponseEntity<Map<String, Object>>(response, HttpStatus.OK);
+	}
+
+	
 	@Secured({ "ROLE_ALMACEN", "ROLE_ADMIN" , "ROLE_JEFE", "ROLE_LOGISTICA"})
 	@PostMapping("/crear")
 	public ResponseEntity<?> crearAlmacen(@RequestBody InventarioFisico inventariofisico){
@@ -136,7 +250,7 @@ public class InventarioFisicoController {
 		
 		try {
 			if(inventarioObtenidoxFecha == null) {
-				inventariofisico.setESTADO("A");
+				inventariofisico.setESTADO("P");
 				inventariofisico.setREG_USER(authentication.getName());
 				inventariofisico.setFECH_REG_USER(ZonedDateTime.now().toLocalDate().toString());
 				nuevoinventariofisico =	inventariofisicoservice.grabarInventarioFisico(inventariofisico);
