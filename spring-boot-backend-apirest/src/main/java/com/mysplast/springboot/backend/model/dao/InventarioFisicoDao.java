@@ -13,8 +13,8 @@ public interface InventarioFisicoDao extends CrudRepository<InventarioFisico, St
 	@Query(value="SELECT TOP(50)* FROM INVENTARIOFISICO ORDER BY FECHA DESC", nativeQuery = true)
 	public List<InventarioFisico> listarTop50InventarioFisico();
 	
-	@Query(value="EXEC usp_consultainventariofisicoxfecha @fecha = :fecha", nativeQuery = true)
-	public InventarioFisico buscarInventarioFisicoxFecha(@Param("fecha") String fecha);
+	@Query(value="EXEC usp_consultainventariofisicoxfecha @fecha = :fecha, @SECTOR = :sector", nativeQuery = true)
+	public List<InventarioFisico> buscarInventarioFisicoxFecha(@Param("fecha") String fecha, @Param("sector")String sector);
 	
 	@Query(value="EXEC usp_consultainventariofisico @sector = :sector, @fecha1 = :fecha1, @fecha2 = :fecha2", nativeQuery = true)
 	public List<InventarioFisico> filtroInventarioFisico(@Param("sector") String sector, @Param("fecha1")String fecha1,@Param("fecha2")String fecha2);

@@ -240,16 +240,18 @@ public class InventarioFisicoController {
 	@PostMapping("/crear")
 	public ResponseEntity<?> crearAlmacen(@RequestBody InventarioFisico inventariofisico){
 		
-		InventarioFisico inventarioObtenidoxFecha = null;
+		List<InventarioFisico> inventarioObtenidoxFecha = null;
 		InventarioFisico nuevoinventariofisico = null;
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		Map<String, Object> response = new HashMap<>();
-		
-		inventarioObtenidoxFecha = inventariofisicoservice.buscarInventarioFisicoxFecha(inventariofisico.getFECHA());
+		inventarioObtenidoxFecha = inventariofisicoservice.buscarInventarioFisicoxFecha(inventariofisico.getFECHA(), inventariofisico.getId_SECTOR().getID_SECTOR());
+	
+
 		
 		
 		try {
-			if(inventarioObtenidoxFecha == null) {
+
+			if(inventarioObtenidoxFecha.size() == 0) {
 				inventariofisico.setESTADO("P");
 				inventariofisico.setREG_USER(authentication.getName());
 				inventariofisico.setFECH_REG_USER(ZonedDateTime.now().toLocalDate().toString());

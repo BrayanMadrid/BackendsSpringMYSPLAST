@@ -32,8 +32,8 @@ public class InventarioFisicoService {
 		return inventariofisicorepo.findById(id).get();
 	}
 	
-	public InventarioFisico buscarInventarioFisicoxFecha (String fecha) {
-		return inventariofisicorepo.buscarInventarioFisicoxFecha(fecha);
+	public List<InventarioFisico> buscarInventarioFisicoxFecha (String fecha, String sector) {
+		return inventariofisicorepo.buscarInventarioFisicoxFecha(fecha, sector);
 	}
 	
 	public InventarioFisico grabarInventarioFisico(InventarioFisico inventariofisico) {
