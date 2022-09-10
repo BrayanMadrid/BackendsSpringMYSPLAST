@@ -17,9 +17,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.mysplast.springboot.backend.model.entity.IngresosAlmacen;
 import com.mysplast.springboot.backend.model.entity.Kardex;
+import com.mysplast.springboot.backend.model.entity.Ordencompra;
 import com.mysplast.springboot.backend.model.entity.Stock;
 import com.mysplast.springboot.backend.model.service.IngresoService;
 import com.mysplast.springboot.backend.model.service.KardexService;
+import com.mysplast.springboot.backend.model.service.OrdencompraService;
 import com.mysplast.springboot.backend.model.service.StockService;
 
 @CrossOrigin(origins = { "http://localhost:4200" })
@@ -35,6 +37,9 @@ public class ReporteController {
 	
 	@Autowired
 	private IngresoService ingresoservice;
+	
+	@Autowired
+	private OrdencompraService ordenservice;
 
 	@GetMapping("/filtrostock")
 	public ResponseEntity<?> filtroProductos(@RequestParam(value = "subalm", required = false) String subalm,
@@ -146,6 +151,48 @@ public class ReporteController {
 		}
 
 		return new ResponseEntity<List<Kardex>>(filtrokardex, HttpStatus.OK);
+	}
+	
+	@GetMapping("/filtrogastos")
+	public ResponseEntity<?> filtrogastos(
+			@RequestParam(value = "fecha1", required = false) String fecha1,
+			@RequestParam(value = "fecha2", required = false) String fecha2,
+			@RequestParam(value = "moneda", required = false) String moneda) {
+		
+		List<Ordencompra> filtroordencompra = null;
+
+		Map<String, Object> response = new HashMap<>();
+		
+
+		if (fecha1.equals("") || fecha2.equals("") || moneda.equals("")) {
+			response.put("mensaje", "Todos los campos son obligatorios!");
+			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.NOT_FOUND);
+		}
+		
+		if (fecha1!="" && fecha2.equals("") || fecha1.equals("") && fecha2!="") {
+			response.put("mensaje", "Si va a filtrar por fechas debe escoger un rango de fechas!");
+			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.NOT_FOUND);
+		}
+
+		if (fecha1.equals("")) {
+			fecha1 = null;
+		}
+		if (fecha2.equals("")) {
+			fecha2 = null;
+		}
+		if (moneda.equals("")) {
+			moneda = null;
+		}
+
+		try {
+			filtroordencompra = ordenservice.filtroGastos(fecha1, fecha2, moneda);
+		} catch (DataAccessException e) {
+			response.put("mensaje", "Error al realizar la consulta en la base de datos!");
+			response.put("error", e.getMessage().concat(":").concat(e.getMostSpecificCause().getMessage()));
+			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+
+		return new ResponseEntity<List<Ordencompra>>(filtroordencompra, HttpStatus.OK);
 	}
 	
 	
