@@ -33,7 +33,7 @@ public class Itemtransaccion implements Serializable {
 	private int LINEA;
 	
 	@Column(name="CANTIDAD", nullable = false)
-	private float CANTIDAD;
+	private double CANTIDAD;
 	
 	@ManyToOne (fetch=FetchType.LAZY)
 	@JoinColumn(name="ID_PRODUCTO", referencedColumnName = "ID_PRODUCTO")
@@ -59,11 +59,11 @@ public class Itemtransaccion implements Serializable {
 		LINEA = lINEA;
 	}
 
-	public float getCANTIDAD() {
+	public double getCANTIDAD() {
 		return CANTIDAD;
 	}
 
-	public void setCANTIDAD(float cANTIDAD) {
+	public void setCANTIDAD(double cANTIDAD) {
 		CANTIDAD = cANTIDAD;
 	}
 

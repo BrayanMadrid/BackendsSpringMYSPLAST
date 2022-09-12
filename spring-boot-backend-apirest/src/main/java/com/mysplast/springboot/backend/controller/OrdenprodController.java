@@ -1,6 +1,7 @@
 package com.mysplast.springboot.backend.controller;
 
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,18 +24,55 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.mysplast.springboot.backend.model.entity.Categoriatransaccion;
+import com.mysplast.springboot.backend.model.entity.Egreso;
+import com.mysplast.springboot.backend.model.entity.Ingreso;
+import com.mysplast.springboot.backend.model.entity.Itemtransaccion;
+import com.mysplast.springboot.backend.model.entity.Kardex;
 import com.mysplast.springboot.backend.model.entity.Ordenprod;
+import com.mysplast.springboot.backend.model.entity.Producto;
+import com.mysplast.springboot.backend.model.entity.Recetaprod;
+import com.mysplast.springboot.backend.model.entity.Sector;
+import com.mysplast.springboot.backend.model.entity.Stock;
+import com.mysplast.springboot.backend.model.entity.Tipotransaccion;
+import com.mysplast.springboot.backend.model.service.CategoriatransaccionService;
+import com.mysplast.springboot.backend.model.service.EgresoService;
+import com.mysplast.springboot.backend.model.service.IngresoService;
+import com.mysplast.springboot.backend.model.service.KardexService;
 import com.mysplast.springboot.backend.model.service.OrdenprodService;
+import com.mysplast.springboot.backend.model.service.RecetaprodService;
+import com.mysplast.springboot.backend.model.service.StockService;
+import com.mysplast.springboot.backend.model.service.Tipotransaccionservice;
 
 @CrossOrigin(origins = { "http://localhost:4200" })
 @RestController
 @RequestMapping("/ordenprod")
 public class OrdenprodController {
-	
+
 	@Autowired
 	private OrdenprodService ordenprodservice;
-	
-	
+
+	@Autowired
+	private IngresoService ingresoservice;
+
+	@Autowired
+	private EgresoService egresoservice;
+
+	@Autowired
+	private RecetaprodService recetaprodservice;
+
+	@Autowired
+	private StockService productostockservice;
+
+	@Autowired
+	private Tipotransaccionservice tipotransaccionservice;
+
+	@Autowired
+	private KardexService kardexservice;
+
+	@Autowired
+	private CategoriatransaccionService categoriatransaccionservice;
+
 	@Secured({ "ROLE_ALMACEN", "ROLE_ADMIN", "ROLE_JEFE", "ROLE_LOGISTICA" })
 	@GetMapping("/listartop")
 	public ResponseEntity<?> listarTop50() {
@@ -103,6 +141,7 @@ public class OrdenprodController {
 	public ResponseEntity<?> crear(@RequestBody Ordenprod ordenprod) {
 
 		Ordenprod nuevoordenprod = null;
+
 		Map<String, Object> response = new HashMap<>();
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
@@ -126,8 +165,7 @@ public class OrdenprodController {
 
 	@Secured({ "ROLE_ADMIN", "ROLE_LOGISTICA" })
 	@PutMapping("/estado/{id}")
-	public ResponseEntity<?> actualizarEstadoOrdenprod(@RequestBody Ordenprod ordenprod,
-			@PathVariable String id) {
+	public ResponseEntity<?> actualizarEstadoOrdenprod(@RequestBody Ordenprod ordenprod, @PathVariable String id) {
 		Ordenprod ordenprodActual = ordenprodservice.buscarOrdenprodXId(id);
 		Ordenprod ordenprodActualizada = null;
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -192,6 +230,208 @@ public class OrdenprodController {
 		}
 
 		try {
+			
+			
+			boolean StockNegativo = false;
+			boolean StockNulo = false;
+			Categoriatransaccion categoriaIngreso = categoriatransaccionservice.buscarCaterogiraTransaccion(Long.parseLong("2"));
+			Categoriatransaccion categoriaEgreso = categoriatransaccionservice.buscarCaterogiraTransaccion(Long.parseLong("7"));
+			Tipotransaccion nuevotipotransaccion = tipotransaccionservice.buscarTipotransaccionId(Long.parseLong("1"));
+			Tipotransaccion nuevotipotransaccionEgreso = tipotransaccionservice.buscarTipotransaccionId(Long.parseLong("2"));
+			
+			//Creando Nuevo Egreso a Partir de Datos de la Orden de Producción
+			Egreso nuevoegreso = new Egreso();	
+			nuevoegreso.setId_PERSONA(ordenprod.getId_PERSONA());
+			nuevoegreso.setId_SECTOR(ordenprod.getId_SECTORINSUMOS());
+			nuevoegreso.setNRO_ORDEN(ordenprod.getNRO_ORDENPROD());
+			nuevoegreso.setCategoriatransaccion(categoriaEgreso);
+			
+			//Agregando Items al Detalle del Egreso a partir de los Insumos de los Items de la Orden de Producción
+			List<Itemtransaccion> itemtransaccionAcumuladoEgreso = new ArrayList<Itemtransaccion>();
+			for (int i = 0; i < ordenprod.getItems().size(); i++) {
+				Recetaprod recetaObtenida = recetaprodservice.buscarRecetaxProducto(ordenprod.getItems().get(i).getId_PRODUCTO().getID_PRODUCTO());
+				if (recetaObtenida == null) {
+					response.put("mensaje",
+							"No se han encontrado recetas para los productos o se encuentran inactivas, por favor verificar!");
+					return new ResponseEntity<Map<String, Object>>(response, HttpStatus.NOT_FOUND);
+				}
+				
+				int line = 0;
+					for(int x = 0; x < recetaObtenida.getItems().size(); x++) {
+						Itemtransaccion itemtransaccionEgreso = new Itemtransaccion();
+						itemtransaccionEgreso.setCANTIDAD((ordenprod.getItems().get(i).getCANTIDAD()) * (recetaObtenida.getItems().get(x).getCANTIDAD()));
+						itemtransaccionEgreso.setId_PRODUCTO(recetaObtenida.getItems().get(x).getId_PRODUCTO());
+						itemtransaccionEgreso.setLINEA(line + 1);
+						itemtransaccionAcumuladoEgreso.add(itemtransaccionEgreso);
+					}
+			}
+			
+			nuevoegreso.setItems(itemtransaccionAcumuladoEgreso);
+			
+			List<Itemtransaccion> whtransaccionitemActualEgreso = nuevoegreso.getItems();
+
+
+			for (int i = 0; i < whtransaccionitemActualEgreso.size(); i++) {
+
+				String sector = nuevoegreso.getId_SECTOR().getID_SECTOR();
+				String producto = whtransaccionitemActualEgreso.get(i).getId_PRODUCTO().getID_PRODUCTO();
+				Stock productostockactual = productostockservice.buscarPorAlmacen(sector, producto);
+
+				if (productostockactual.equals(null)) {
+					StockNulo = true;
+					break;
+				} else {
+					double cantidad = whtransaccionitemActualEgreso.get(i).getCANTIDAD();
+					double cantidadactualizada = productostockactual.getCANTIDAD() - cantidad;
+					if (cantidadactualizada < 0) {
+						StockNegativo = true;
+						break;
+					}
+				}
+			}
+			
+			
+			//Creando Nuevo Ingreso a Partir de Datos de la Orden de Producción
+			Ingreso nuevoingreso = new Ingreso();	
+			nuevoingreso.setId_PERSONA(ordenprod.getId_PERSONA());
+			nuevoingreso.setId_SECTOR(ordenprod.getId_SECTOR());
+			nuevoingreso.setNRO_ORDEN(ordenprod.getNRO_ORDENPROD());
+			nuevoingreso.setCategoriatransaccion(categoriaIngreso);
+			
+			//Agregando Items al Detalle del Ingreso a partir de los Items de la Orden de Producción
+			List<Itemtransaccion> itemtransaccionAcumulado = new ArrayList<Itemtransaccion>();
+			for (int i = 0; i < ordenprod.getItems().size(); i++) {
+			Itemtransaccion itemtransaccion = new Itemtransaccion();
+			itemtransaccion.setCANTIDAD(ordenprod.getItems().get(i).getCANTIDAD());
+			itemtransaccion.setId_PRODUCTO(ordenprod.getItems().get(i).getId_PRODUCTO());
+			itemtransaccion.setLINEA(ordenprod.getItems().get(i).getLINE());
+			itemtransaccionAcumulado.add(itemtransaccion);
+			}
+			nuevoingreso.setItems(itemtransaccionAcumulado);
+			
+			List<Itemtransaccion> whtransaccionitemActual = nuevoingreso.getItems();
+				
+				
+				// Inicio de Grabación de Egreso de Mercadería de Insumos
+				
+				if (StockNulo == true) {
+					response.put("mensaje", "No se cuenta con stock de el/los productos indicados, verificar!");
+					return new ResponseEntity<Map<String, Object>>(response, HttpStatus.CONFLICT);
+				} else {
+					if (StockNegativo == true) {
+						response.put("mensaje", "El stock del producto no puede quedar en negativo, verificar!");
+						return new ResponseEntity<Map<String, Object>>(response, HttpStatus.CONFLICT);
+					} else {
+						
+						if(nuevoegreso.getNRO_ORDEN()!="") {
+							nuevoegreso.setESTADO("I");
+							nuevoegreso.setFECHATRAN(ZonedDateTime.now().toLocalDate().toString());
+						} else {
+							nuevoegreso.setESTADO("A");
+						}
+						nuevoegreso.setREG_USER(authentication.getName());
+						nuevoegreso.setId_TIPOTRANSACCION(nuevotipotransaccionEgreso);
+						nuevoegreso.setFECH_REG_USER(ZonedDateTime.now().toLocalDate().toString());
+						egresoservice.grabarEgreso(nuevoegreso);
+
+						for (int i = 0; i < whtransaccionitemActualEgreso.size(); i++) {
+
+							String sectorEgreso = nuevoegreso.getId_SECTOR().getID_SECTOR();
+							String productoEgreso = whtransaccionitemActualEgreso.get(i).getId_PRODUCTO().getID_PRODUCTO();
+							Producto productoItemEgreso = whtransaccionitemActualEgreso.get(i).getId_PRODUCTO();
+							Sector subalmItemEgreso = nuevoegreso.getId_SECTOR();
+							Stock productostockactualEgreso = productostockservice.buscarPorAlmacen(sectorEgreso, productoEgreso);
+							double cantidadEgreso = whtransaccionitemActualEgreso.get(i).getCANTIDAD();
+							double cantidadactualizada = productostockactualEgreso.getCANTIDAD() - cantidadEgreso;
+							productostockactualEgreso.setCANTIDAD(cantidadactualizada);
+							productostockservice.grabarProductoStock(productostockactualEgreso);
+							Kardex kardexactual = kardexservice.buscarPorAlmacen(sectorEgreso, productoEgreso);
+
+							Kardex nuevoKardexEgreso = new Kardex();
+							nuevoKardexEgreso.setId_TRAN(nuevoegreso);
+							nuevoKardexEgreso.setId_PRODUCTO(productoItemEgreso);
+							nuevoKardexEgreso.setId_SECTOR(subalmItemEgreso);
+							nuevoKardexEgreso.setFECHA(ZonedDateTime.now().toLocalDate().toString());
+							nuevoKardexEgreso.setOPERACION("R");
+							nuevoKardexEgreso.setCONDICION("Salida de Mercadería");
+							nuevoKardexEgreso.setCANTIDAD(cantidadEgreso);
+
+							if (kardexactual == null) {
+								nuevoKardexEgreso.setSTOCKFECHA(cantidadEgreso);
+
+							} else {
+								double stockactual = kardexactual.getSTOCKFECHA() - cantidadEgreso;
+								nuevoKardexEgreso.setSTOCKFECHA(stockactual);
+							}
+
+							kardexservice.grabarKardex(nuevoKardexEgreso);
+
+						}
+
+					}
+				}
+				
+				
+
+				// Inicio de Grabación de Ingreso de Mercadería
+				
+				if(nuevoingreso.getNRO_ORDEN()!="") {
+					nuevoingreso.setESTADO("I");
+					nuevoingreso.setFECHATRAN(ZonedDateTime.now().toLocalDate().toString());
+				} else {
+					nuevoingreso.setESTADO("A");
+				}
+				nuevoingreso.setREG_USER(authentication.getName());
+				nuevoingreso.setId_TIPOTRANSACCION(nuevotipotransaccion);
+				nuevoingreso.setFECH_REG_USER(ZonedDateTime.now().toLocalDate().toString());
+				ingresoservice.grabarIngreso(nuevoingreso);
+				
+				for(int i=0;i<whtransaccionitemActual.size();i++) {
+					double cantidad = whtransaccionitemActual.get(i).getCANTIDAD();
+					String subalmacen = nuevoingreso.getId_SECTOR().getID_SECTOR();
+					String producto = whtransaccionitemActual.get(i).getId_PRODUCTO().getID_PRODUCTO();
+					Producto productoItem = whtransaccionitemActual.get(i).getId_PRODUCTO();
+					Sector subalmItem = nuevoingreso.getId_SECTOR();
+					Stock productostockactual = productostockservice.buscarPorAlmacen(subalmacen, producto);
+					Kardex kardexactual = kardexservice.buscarPorAlmacen(subalmacen, producto);
+					
+					if(productostockactual==null) {
+						
+						Stock nuevoProductoStock = new Stock();
+						nuevoProductoStock.setCANTIDAD(cantidad);
+						nuevoProductoStock.setId_PRODUCTO(productoItem);
+						nuevoProductoStock.setId_SECTOR(subalmItem);
+						productostockservice.grabarProductoStock(nuevoProductoStock);
+						
+					} else {
+						
+						double cantidadactualizada =  productostockactual.getCANTIDAD() + cantidad;
+						productostockactual.setCANTIDAD(cantidadactualizada);
+						productostockservice.grabarProductoStock(productostockactual);
+					}
+					
+					Kardex nuevoKardex = new Kardex();
+					nuevoKardex.setId_TRAN(nuevoingreso);
+					nuevoKardex.setId_PRODUCTO(productoItem);
+					nuevoKardex.setId_SECTOR(subalmItem);
+					nuevoKardex.setFECHA(ZonedDateTime.now().toLocalDate().toString());
+					nuevoKardex.setOPERACION("S");
+					nuevoKardex.setCONDICION("Ingreso de Mercadería");
+					nuevoKardex.setCANTIDAD(cantidad);
+					
+					if(kardexactual==null) {
+						nuevoKardex.setSTOCKFECHA(cantidad);
+
+					} else {
+						double stockactual = kardexactual.getSTOCKFECHA()+cantidad;
+						nuevoKardex.setSTOCKFECHA(stockactual);
+					}
+					
+					kardexservice.grabarKardex(nuevoKardex);
+				}
+				
+				//FIN DE INGRESO DE MERCADERÍA
+			
 			ordenprodActual.setESTADO("I");
 			ordenprodActual.setMOD_USER(authentication.getName());
 			ordenprodActual.setFECH_MOD_USER(ZonedDateTime.now().toLocalDate().toString());
@@ -263,7 +503,8 @@ public class OrdenprodController {
 
 		Map<String, Object> response = new HashMap<>();
 
-		if (subalmacen.equals("") && almacen.equals("") && fecha1.equals("") && fecha2.equals("") && estado.equals("")) {
+		if (subalmacen.equals("") && almacen.equals("") && fecha1.equals("") && fecha2.equals("")
+				&& estado.equals("")) {
 			response.put("mensaje", "Tiene que ingresar al menos un dato!");
 			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.NOT_FOUND);
 		}
@@ -285,7 +526,7 @@ public class OrdenprodController {
 		if (fecha2.equals("")) {
 			fecha2 = null;
 		}
-		
+
 		if (estado.equals("")) {
 			estado = null;
 		}
