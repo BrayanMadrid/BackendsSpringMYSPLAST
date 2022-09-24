@@ -24,6 +24,10 @@ public class InventarioFisicoService {
 		return inventariofisicorepo.listarTop50InventarioFisico();
 	}
 	
+	public List<InventarioFisico> listarInventariosPendientes(){
+		return inventariofisicorepo.inventariosFisicosPendientes();
+	}
+	
 	public List<InventarioFisico> filtrarInventariosFisicos(String sector, String fecha1, String fecha2){
 		return inventariofisicorepo.filtroInventarioFisico(sector, fecha1, fecha2);
 	}

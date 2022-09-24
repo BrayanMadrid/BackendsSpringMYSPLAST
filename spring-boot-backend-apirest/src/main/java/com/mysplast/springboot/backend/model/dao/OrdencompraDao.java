@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 
+import com.mysplast.springboot.backend.model.entity.ConsultaGatosMes;
 import com.mysplast.springboot.backend.model.entity.Ordencompra;
 
 public interface OrdencompraDao extends CrudRepository<Ordencompra, String> {
@@ -21,5 +22,15 @@ public interface OrdencompraDao extends CrudRepository<Ordencompra, String> {
 
 	@Query(value="SELECT TOP(50)* FROM ORDENCOMPRA ORDER BY NROORDENCOMPRA DESC", nativeQuery = true)
 	public List<Ordencompra> listar50OrdenesDeCompra();
+	
+	@Query(value="EXEC usp_gastospormeslocal", nativeQuery = true)
+	public List<ConsultaGatosMes> gastosMesLocal();
+	
+	@Query(value="EXEC usp_gastospormesextranjera", nativeQuery = true)
+	public List<ConsultaGatosMes> gastosMesExtranjera();
+	
+	@Query(value="SELECT * FROM ORDENCOMPRA WHERE ESTADO = 'P'", nativeQuery = true)
+	public List<Ordencompra> listarOrdenesCompraPendientes();
+
 
 }

@@ -20,6 +20,10 @@ public class OrdenprodService {
 		return ordenprodrepo.findTop50ByOrderByFECHADesc();
 	}
 	
+	public List<Ordenprod> listarOrdenprodPendientes(){
+		return ordenprodrepo.listarOrdenesProdPendientes();
+	}
+	
 	public Ordenprod buscarOrdenprodXId(String id) {
 		return ordenprodrepo.findById(id).get();
 	}

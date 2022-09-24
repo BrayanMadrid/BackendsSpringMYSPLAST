@@ -14,6 +14,9 @@ public interface OrdenprodDao extends CrudRepository<Ordenprod, String> {
 	public List<Ordenprod> filtroOrdenProd(@Param("sector") String sector, @Param("almacen") String almacen, @Param("fecha1")String fecha1,@Param("fecha2")String fecha2,@Param("estado")String estado);
 
 	public List<Ordenprod> findTop50ByOrderByFECHADesc();
+	
+	@Query(value="SELECT * FROM ORDENPROD WHERE ESTADO = 'P'", nativeQuery = true)
+	public List<Ordenprod> listarOrdenesProdPendientes();
 
 
 }

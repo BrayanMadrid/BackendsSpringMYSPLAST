@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.mysplast.springboot.backend.model.dao.OrdencompraDao;
+import com.mysplast.springboot.backend.model.entity.ConsultaGatosMes;
 import com.mysplast.springboot.backend.model.entity.Ordencompra;
 
 @Service
@@ -24,6 +25,10 @@ public class OrdencompraService {
 		return (List<Ordencompra>) ordencomprarepo.listar50OrdenesDeCompra();
 	}
 	
+	public List<Ordencompra> listarOrdenesPendientes(){
+		return ordencomprarepo.listarOrdenesCompraPendientes();
+	}
+	
 	public Ordencompra buscarOrdencomprasId(String id){
 		return ordencomprarepo.findById(id).get();
 	}
@@ -38,6 +43,14 @@ public class OrdencompraService {
 	
 	public List<Ordencompra> filtroOrdencompra(String subalmacen, String almacen, String fecha1, String fecha2){
 		return (List<Ordencompra>) ordencomprarepo.filtroOrdenCompra(subalmacen, almacen, fecha1, fecha2);
+	}
+	
+	public List<ConsultaGatosMes> gastosMesLocal(){
+		return ordencomprarepo.gastosMesLocal();
+	}
+	
+	public List<ConsultaGatosMes> gastosMesExtranjera(){
+		return ordencomprarepo.gastosMesExtranjera();
 	}
 	
 	public List<Ordencompra> filtroGastos(String fecha1, String fecha2, String moneda){
