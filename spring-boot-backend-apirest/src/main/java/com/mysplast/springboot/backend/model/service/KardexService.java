@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.mysplast.springboot.backend.model.dao.KardexDao;
 import com.mysplast.springboot.backend.model.entity.Kardex;
+import com.mysplast.springboot.backend.model.entity.TopProductosKardex;
 
 @Service
 @Transactional
@@ -26,6 +27,14 @@ public class KardexService {
 	
 	public Kardex buscarKardexId(Long id) {
 		return kardexrepo.findById(id).get();
+	}
+	
+	public List<TopProductosKardex> topProductosEgresos(){
+		return kardexrepo.topProductosEgresos();
+	}
+	
+	public List<TopProductosKardex> topProductosIngresos(){
+		return kardexrepo.topProductosIngresos();
 	}
 	
 	public Kardex grabarKardex(Kardex kardex) {

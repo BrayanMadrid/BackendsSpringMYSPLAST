@@ -7,6 +7,7 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 
 import com.mysplast.springboot.backend.model.entity.Ordenprod;
+import com.mysplast.springboot.backend.model.entity.TopProductosProduccion;
 
 public interface OrdenprodDao extends CrudRepository<Ordenprod, String> {
 	
@@ -17,6 +18,9 @@ public interface OrdenprodDao extends CrudRepository<Ordenprod, String> {
 	
 	@Query(value="SELECT * FROM ORDENPROD WHERE ESTADO = 'P'", nativeQuery = true)
 	public List<Ordenprod> listarOrdenesProdPendientes();
+	
+	@Query(value="EXEC USP_TOPPRODUCTOSPRODUCCION", nativeQuery = true)
+	public List<TopProductosProduccion> top2ProductosProduccion();
 
 
 }

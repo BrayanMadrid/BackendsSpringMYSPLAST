@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.mysplast.springboot.backend.model.dao.OrdenprodDao;
 import com.mysplast.springboot.backend.model.entity.Ordenprod;
+import com.mysplast.springboot.backend.model.entity.TopProductosProduccion;
 
 @Service
 @Transactional
@@ -22,6 +23,10 @@ public class OrdenprodService {
 	
 	public List<Ordenprod> listarOrdenprodPendientes(){
 		return ordenprodrepo.listarOrdenesProdPendientes();
+	}
+	
+	public List<TopProductosProduccion> topProductosProduccion(){
+		return ordenprodrepo.top2ProductosProduccion();
 	}
 	
 	public Ordenprod buscarOrdenprodXId(String id) {

@@ -7,6 +7,7 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 
 import com.mysplast.springboot.backend.model.entity.Kardex;
+import com.mysplast.springboot.backend.model.entity.TopProductosKardex;
 
 public interface KardexDao extends CrudRepository<Kardex, Long> {
 	
@@ -17,5 +18,10 @@ public interface KardexDao extends CrudRepository<Kardex, Long> {
 	@Query(value="EXEC usp_consultakardex @sector = :sector, @almacen = :almacen, @producto = :producto, @fecha1 = :fecha1, @fecha2 = :fecha2", nativeQuery = true)
 	public List<Kardex> filtroKardex(@Param("sector") String sector, @Param("almacen") String almacen, @Param("producto")String producto, @Param("fecha1")String fecha1,@Param("fecha2")String fecha2);
 
+	@Query(value="EXEC USP_TOP5PRODUCTOSCONMASSALIDAS", nativeQuery = true)
+	public List<TopProductosKardex> topProductosEgresos();
+	
+	@Query(value="EXEC USP_TOP5PRODUCTOSCONMASINGRESOS", nativeQuery = true)
+	public List<TopProductosKardex> topProductosIngresos();
 
 }
