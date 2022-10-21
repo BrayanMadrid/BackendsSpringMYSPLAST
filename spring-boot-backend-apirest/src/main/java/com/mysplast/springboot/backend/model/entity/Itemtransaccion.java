@@ -32,6 +32,9 @@ public class Itemtransaccion implements Serializable {
 	@Column(name="LINEA", nullable = false)
 	private int LINEA;
 	
+	@Column(name="LOTE", length = 25, nullable=true)
+	private String LOTE;
+	
 	@Column(name="CANTIDAD", nullable = false)
 	private double CANTIDAD;
 	
@@ -57,6 +60,14 @@ public class Itemtransaccion implements Serializable {
 
 	public void setLINEA(int lINEA) {
 		LINEA = lINEA;
+	}
+
+	public String getLOTE() {
+		return LOTE;
+	}
+
+	public void setLOTE(String lOTE) {
+		LOTE = lOTE;
 	}
 
 	public double getCANTIDAD() {

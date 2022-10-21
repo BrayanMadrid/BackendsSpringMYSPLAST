@@ -51,6 +51,9 @@ public class Producto implements Serializable {
 	@Column(name="DESC_PRODUCTO", length=500, nullable=true)
 	private String DESC_PRODUCTO;
 	
+	@Column(name="CODEXTERNO", length=9, nullable=false)
+	private String CODEXTERNO;
+	
 	@Column(name="ESTADO", length=1, nullable=false)
 	private String ESTADO;
 	
@@ -111,6 +114,14 @@ public class Producto implements Serializable {
 
 	public void setDESC_PRODUCTO(String dESC_PRODUCTO) {
 		DESC_PRODUCTO = dESC_PRODUCTO;
+	}
+
+	public String getCODEXTERNO() {
+		return CODEXTERNO;
+	}
+
+	public void setCODEXTERNO(String cODEXTERNO) {
+		CODEXTERNO = cODEXTERNO;
 	}
 
 	public String getFLAG_PRODUCCION() {
