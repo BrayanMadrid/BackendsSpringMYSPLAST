@@ -298,13 +298,21 @@ public class OrdenprodController {
 			nuevoingreso.setNRO_ORDEN(ordenprod.getNRO_ORDENPROD());
 			nuevoingreso.setCategoriatransaccion(categoriaIngreso);
 			
+			String Lote = "";
+			int día = ZonedDateTime.now().toLocalDate().getDayOfMonth();
+			int mes = ZonedDateTime.now().toLocalDate().getMonthValue();
+			int año = ZonedDateTime.now().toLocalDate().getYear();
+			
 			//Agregando Items al Detalle del Ingreso a partir de los Items de la Orden de Producción
 			List<Itemtransaccion> itemtransaccionAcumulado = new ArrayList<Itemtransaccion>();
 			for (int i = 0; i < ordenprod.getItems().size(); i++) {
+			String codigoproductolote = ordenprod.getItems().get(i).getId_PRODUCTO().getCODEXTERNO().substring(0, 4);
+			Lote = (codigoproductolote +String.valueOf(día) + String.valueOf(mes) + String.valueOf(año));
 			Itemtransaccion itemtransaccion = new Itemtransaccion();
 			itemtransaccion.setCANTIDAD(ordenprod.getItems().get(i).getCANTIDAD());
 			itemtransaccion.setId_PRODUCTO(ordenprod.getItems().get(i).getId_PRODUCTO());
 			itemtransaccion.setLINEA(ordenprod.getItems().get(i).getLINE());
+			itemtransaccion.setLOTE(Lote);
 			itemtransaccionAcumulado.add(itemtransaccion);
 			}
 			nuevoingreso.setItems(itemtransaccionAcumulado);

@@ -15,11 +15,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.mysplast.springboot.backend.model.entity.ConsultaLotes;
 import com.mysplast.springboot.backend.model.entity.IngresosAlmacen;
 import com.mysplast.springboot.backend.model.entity.Kardex;
 import com.mysplast.springboot.backend.model.entity.Ordencompra;
 import com.mysplast.springboot.backend.model.entity.Stock;
 import com.mysplast.springboot.backend.model.service.IngresoService;
+import com.mysplast.springboot.backend.model.service.ItemtransaccionService;
 import com.mysplast.springboot.backend.model.service.KardexService;
 import com.mysplast.springboot.backend.model.service.OrdencompraService;
 import com.mysplast.springboot.backend.model.service.StockService;
@@ -40,6 +42,9 @@ public class ReporteController {
 	
 	@Autowired
 	private OrdencompraService ordenservice;
+	
+	@Autowired
+	private ItemtransaccionService itemtransaccionservice;
 
 	@GetMapping("/filtrostock")
 	public ResponseEntity<?> filtroProductos(@RequestParam(value = "subalm", required = false) String subalm,
@@ -236,6 +241,38 @@ public class ReporteController {
 		}
 
 		return new ResponseEntity<List<IngresosAlmacen>>(filtroingresos, HttpStatus.OK);
+	}
+	
+	@GetMapping("/consultalotes")
+	public ResponseEntity<?> filtroIngresosxAlmacen(
+			@RequestParam(value = "fecha1", required = false) String fecha1,
+			@RequestParam(value = "fecha2", required = false) String fecha2) {
+		
+		List<ConsultaLotes> consultaLotes = null;
+
+		Map<String, Object> response = new HashMap<>();
+		
+		if (fecha1!="" && fecha2.equals("") || fecha1.equals("") && fecha2!="") {
+			response.put("mensaje", "Los Camos de Fecha son Obligatorios!");
+			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.NOT_FOUND);
+		}
+
+		if (fecha1.equals("")) {
+			fecha1 = null;
+		}
+		if (fecha2.equals("")) {
+			fecha2 = null;
+		}
+
+		try {
+			consultaLotes = itemtransaccionservice.consultarStockLotesxFecha(fecha1, fecha2);
+		} catch (DataAccessException e) {
+			response.put("mensaje", "Error al realizar la consulta en la base de datos!");
+			response.put("error", e.getMessage().concat(":").concat(e.getMostSpecificCause().getMessage()));
+			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+
+		return new ResponseEntity<List<ConsultaLotes>>(consultaLotes, HttpStatus.OK);
 	}
 
 
